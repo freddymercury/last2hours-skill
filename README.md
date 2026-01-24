@@ -49,6 +49,104 @@ Examples:
 
 ---
 
+## Example: Legal Prompting (Hallucination Prevention)
+
+**Query:** `/last30days prompting techniques for chatgpt for legal questions`
+
+**Research Output:**
+> The dominant theme is hallucination prevention - multiple sources discuss lawyers being fined or embarrassed for submitting fake case citations that ChatGPT fabricated. Key prompting strategies include: (1) using Deep Research mode or grounding tools with uploaded primary sources, (2) building "Hallucination Prevention Systems" into prompts that force epistemic honesty, (3) prompting for procedural questions rather than case law lookups, and (4) framing outputs as "issue-spotting" rather than legal advice. A major warning: chat logs are discoverable in litigation.
+
+**Key patterns discovered:**
+1. Hallucination prevention clauses - "If you don't know a case citation, say so rather than inventing one"
+2. Role assignment - assign ChatGPT a specific persona (paralegal, issue-spotter) to constrain outputs
+3. Structured output requirements - request specific sections (risks, key terms, questions for counsel)
+4. Epistemic humility enforcement - "acknowledge uncertainty" and "flag when you're unsure"
+5. Scope limitation - focus on procedural questions, not case law research
+
+**Then asked:** "I have a squatter in my house in San Francisco, what are my options to get them out?"
+
+**Generated Prompt:**
+
+```
+Role: You are a legal research assistant helping a property owner understand
+their options. You are NOT providing legal advice - you are helping me
+identify issues, understand procedures, and prepare informed questions for an
+attorney.
+
+Situation: I own a residential property in San Francisco, California. Someone
+is currently occupying the property without my permission or any lease
+agreement (a squatter). I need to understand my legal options for removing them.
+
+Your task: Provide a structured analysis covering:
+
+1. California/SF Legal Framework - What laws govern this situation? (Note: San
+Francisco has strong tenant protections - address how these apply or don't
+apply to squatters vs. tenants)
+2. Key Distinctions - Help me understand: squatter vs. trespasser vs. holdover
+tenant. How does the length of occupation affect my options?
+3. Available Legal Remedies - What are my procedural options? (unlawful
+detainer, police involvement, etc.) What is the typical process and timeline?
+4. Critical Mistakes to Avoid - What actions could expose me to liability?
+(self-help eviction, utility shutoffs, etc.)
+5. Questions I Should Ask an Attorney - Based on this analysis, what specific
+questions should I bring to a California real estate attorney?
+
+Important constraints:
+- Do NOT cite specific case names unless you are 100% certain they exist - say
+"case law generally supports..." instead
+- Flag any areas where you're uncertain
+- Note where San Francisco local ordinances may differ from California state law
+- This is for informational purposes to prepare for a legal consultation
+```
+
+**The Result:** A comprehensive 2,500+ word analysis covering California's unlawful detainer process, SF Rent Ordinance nuances, trespasser vs. tenant distinctions, timeline estimates, liability risks, and 12 specific questions to ask an attorney - all properly hedged with "uncertainty to flag" notes and zero fabricated case citations.
+
+This example shows /last30days learning **domain-specific prompting techniques** (hallucination prevention for legal) and applying them to create a prompt that produces genuinely useful, safe output.
+
+---
+
+## Example: Discover Viral Trends (Dog as Human)
+
+**Query:** `/last30days using ChatGPT to make images of dogs`
+
+**Research Output:**
+> The Reddit community is obsessed with the "dog as human" trend - uploading photos of their dogs and asking ChatGPT to show what they'd look like as a person (threads with 600-900+ upvotes). Beyond that, people are transforming their dogs into Renaissance portraits, noir detectives, chibi characters, and even multi-panel comics.
+
+**Key patterns discovered:**
+1. Upload reference photo first - ChatGPT works best with your actual dog's image
+2. "As a human" transformation - The viral trend
+3. Style/era transformations - Renaissance, noir, chibi, cartoon
+4. Scene placement - French bistro, prison yard, detective office
+5. Specific visual details - Lighting, background, expression, accessories
+
+**Then asked:** "what would my dog look like as a human prompt"
+
+**Generated Prompt:**
+
+```
+Look at this photo of my dog. Create an image showing what they would look like
+as a human person. Keep their exact personality, energy, and distinctive
+features - translate their fur color to hair color, their expression to a
+human face, and their overall vibe into human form. Make it a realistic
+portrait photo, not a cartoon.
+```
+
+*How to use: Upload your dog's photo first, then paste this prompt.*
+
+**The Result:**
+
+<p align="center">
+  <img src="assets/dog-original.jpeg" width="300" alt="Original dog photo"/>
+  &nbsp;&nbsp;→&nbsp;&nbsp;
+  <img src="assets/dog-as-human.png" width="300" alt="Dog as human"/>
+</p>
+
+Same golden fur → red hair. Same tongue out. Same harness. Same pink tag. ChatGPT nailed it.
+
+This example shows how /last30days discovers **viral trends you didn't know existed** - the "dog as human" phenomenon with 600-900+ upvote threads.
+
+---
+
 ## Example: Remotion Launch Video
 
 **Query:** `/last30days research best practices for beautiful remotion animation videos in claude code`
@@ -110,48 +208,6 @@ This prompt was generated based on research from 10 Reddit threads (294 upvotes)
 
 ---
 
-## Example: Discover Viral Trends (Dog as Human)
-
-**Query:** `/last30days using ChatGPT to make images of dogs`
-
-**Research Output:**
-> The Reddit community is obsessed with the "dog as human" trend - uploading photos of their dogs and asking ChatGPT to show what they'd look like as a person (threads with 600-900+ upvotes). Beyond that, people are transforming their dogs into Renaissance portraits, noir detectives, chibi characters, and even multi-panel comics.
-
-**Key patterns discovered:**
-1. Upload reference photo first - ChatGPT works best with your actual dog's image
-2. "As a human" transformation - The viral trend
-3. Style/era transformations - Renaissance, noir, chibi, cartoon
-4. Scene placement - French bistro, prison yard, detective office
-5. Specific visual details - Lighting, background, expression, accessories
-
-**Then asked:** "what would my dog look like as a human prompt"
-
-**Generated Prompt:**
-
-```
-Look at this photo of my dog. Create an image showing what they would look like
-as a human person. Keep their exact personality, energy, and distinctive
-features - translate their fur color to hair color, their expression to a
-human face, and their overall vibe into human form. Make it a realistic
-portrait photo, not a cartoon.
-```
-
-*How to use: Upload your dog's photo first, then paste this prompt.*
-
-**The Result:**
-
-<p align="center">
-  <img src="assets/dog-original.jpeg" width="300" alt="Original dog photo"/>
-  &nbsp;&nbsp;→&nbsp;&nbsp;
-  <img src="assets/dog-as-human.png" width="300" alt="Dog as human"/>
-</p>
-
-Same golden fur → red hair. Same tongue out. Same harness. Same pink tag. ChatGPT nailed it.
-
-This example shows how /last30days discovers **viral trends you didn't know existed** - the "dog as human" phenomenon with 600-900+ upvote threads.
-
----
-
 ## Example: Best Rap Songs Right Now
 
 **Query:** `/last30days What are the best rap songs lately`
@@ -181,62 +237,6 @@ Fresh Drops (Jan 2026):
 **Research Stats:** 17 Reddit threads (2,566 upvotes) + 19 X posts (20,000+ likes) from r/hiphopheads, r/rap, @HipHopAllDay, @DailyRapFacts
 
 This example shows /last30days as a **pure research tool** - no target tool needed. Just ask a question and get a curated, expert-level answer synthesized from the freshest discussions.
-
----
-
-## Example: Legal Prompting (Hallucination Prevention)
-
-**Query:** `/last30days prompting techniques for chatgpt for legal questions`
-
-**Research Output:**
-> The dominant theme is hallucination prevention - multiple sources discuss lawyers being fined or embarrassed for submitting fake case citations that ChatGPT fabricated. Key prompting strategies include: (1) using Deep Research mode or grounding tools with uploaded primary sources, (2) building "Hallucination Prevention Systems" into prompts that force epistemic honesty, (3) prompting for procedural questions rather than case law lookups, and (4) framing outputs as "issue-spotting" rather than legal advice. A major warning: chat logs are discoverable in litigation.
-
-**Key patterns discovered:**
-1. Hallucination prevention clauses - "If you don't know a case citation, say so rather than inventing one"
-2. Role assignment - assign ChatGPT a specific persona (paralegal, issue-spotter) to constrain outputs
-3. Structured output requirements - request specific sections (risks, key terms, questions for counsel)
-4. Epistemic humility enforcement - "acknowledge uncertainty" and "flag when you're unsure"
-5. Scope limitation - focus on procedural questions, not case law research
-
-**Then asked:** "I have a squatter in my house in San Francisco, what are my options to get them out?"
-
-**Generated Prompt:**
-
-```
-Role: You are a legal research assistant helping a property owner understand
-their options. You are NOT providing legal advice - you are helping me
-identify issues, understand procedures, and prepare informed questions for an
-attorney.
-
-Situation: I own a residential property in San Francisco, California. Someone
-is currently occupying the property without my permission or any lease
-agreement (a squatter). I need to understand my legal options for removing them.
-
-Your task: Provide a structured analysis covering:
-
-1. California/SF Legal Framework - What laws govern this situation? (Note: San
-Francisco has strong tenant protections - address how these apply or don't
-apply to squatters vs. tenants)
-2. Key Distinctions - Help me understand: squatter vs. trespasser vs. holdover
-tenant. How does the length of occupation affect my options?
-3. Available Legal Remedies - What are my procedural options? (unlawful
-detainer, police involvement, etc.) What is the typical process and timeline?
-4. Critical Mistakes to Avoid - What actions could expose me to liability?
-(self-help eviction, utility shutoffs, etc.)
-5. Questions I Should Ask an Attorney - Based on this analysis, what specific
-questions should I bring to a California real estate attorney?
-
-Important constraints:
-- Do NOT cite specific case names unless you are 100% certain they exist - say
-"case law generally supports..." instead
-- Flag any areas where you're uncertain
-- Note where San Francisco local ordinances may differ from California state law
-- This is for informational purposes to prepare for a legal consultation
-```
-
-**The Result:** A comprehensive 2,500+ word analysis covering California's unlawful detainer process, SF Rent Ordinance nuances, trespasser vs. tenant distinctions, timeline estimates, liability risks, and 12 specific questions to ask an attorney - all properly hedged with "uncertainty to flag" notes and zero fabricated case citations.
-
-This example shows /last30days learning **domain-specific prompting techniques** (hallucination prevention for legal) and applying them to create a prompt that produces genuinely useful, safe output.
 
 ---
 
