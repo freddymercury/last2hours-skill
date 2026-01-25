@@ -22,48 +22,48 @@ DEPTH_CONFIG = {
     "deep": (50, 70),
 }
 
-REDDIT_SEARCH_PROMPT = """Find Reddit discussion threads about: {topic}
+REDDIT_SEARCH_PROMPT = """Find RECENT Reddit discussion threads about: {topic}
 
-STEP 1: EXTRACT CORE KEYWORDS
-Extract the main subject. Examples:
-- "killer features of clawdbot" → search for "clawdbot"
-- "best React hooks practices" → search for "React hooks"
-Search for the CORE KEYWORD, not the full phrase.
+STEP 1: EXTRACT THE CORE SUBJECT
+Strip qualifiers and get the MAIN NOUN/PRODUCT/TOPIC:
+- "best nano banana prompting practices" → "nano banana"
+- "killer features of clawdbot" → "clawdbot"
+- "top Claude Code skills" → "Claude Code skills"
+DO NOT search for "best", "top", "tips", "practices" - just the core subject.
 
-STEP 2: SEARCH STRATEGIES (try multiple)
-1. "reddit [keyword]" - general Reddit search
-2. "reddit [keyword] discussion" - find discussions
-3. "[keyword] site:reddit.com/r/" - subreddit posts
-4. "reddit.com/r/ [keyword] comments" - thread URLs
+STEP 2: SEARCH FOR RECENT CONTENT (CRITICAL)
+You MUST search with date filters to find recent threads:
+1. "[core subject] site:reddit.com after:{from_date}"
+2. "reddit [core subject] 2026" or "reddit [core subject] January 2026"
+3. "[core subject] site:reddit.com/r/"
 
-REQUIRED: URLs must contain BOTH "/r/" AND "/comments/"
-Example valid URL: https://www.reddit.com/r/selfhosted/comments/abc123/title/
+The goal is threads from {from_date} to {to_date}. Older threads are NOT useful.
 
-REJECT these URLs (not discussion threads):
-- developers.reddit.com (Reddit apps, not discussions)
-- business.reddit.com
-- reddit.com/user/ (user profiles)
-- Any URL missing "/comments/"
+STEP 3: VALIDATE DATES
+Before including a thread, verify its date is AFTER {from_date}.
+If you cannot determine the date, set date to null.
+EXCLUDE threads you know are older than {from_date}.
 
-DATE RANGE: {from_date} to {to_date} (last 30 days).
+REQUIRED URL FORMAT: Must contain "/r/" AND "/comments/"
+REJECT: developers.reddit.com, business.reddit.com, reddit.com/user/
 
-Find {min_items}-{max_items} discussion threads.
+Find {min_items}-{max_items} RECENT discussion threads (from last 30 days).
 
 Return JSON:
 {{
   "items": [
     {{
-      "title": "Thread title from Reddit",
+      "title": "Thread title",
       "url": "https://www.reddit.com/r/subreddit/comments/xyz/title/",
       "subreddit": "subreddit_name",
       "date": "YYYY-MM-DD or null",
-      "why_relevant": "Why this is relevant",
+      "why_relevant": "How this relates to {topic}",
       "relevance": 0.85
     }}
   ]
 }}
 
-IMPORTANT: Only return items with URLs containing /r/*/comments/*. If you cannot find any valid discussion threads, return {{"items": []}}."""
+IMPORTANT: Only return threads from the last 30 days. Old threads will be filtered out anyway."""
 
 
 def search_reddit(
