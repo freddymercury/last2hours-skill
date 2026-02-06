@@ -1,5 +1,10 @@
 # /last2hours
 
+> **TL;DR** — Install: `git clone https://github.com/freddymercury/last2hours-skill.git ~/.claude/skills/last2hours`
+> Use: `/last2hours [topic]` or `/last2hours [topic] --range "3 days"`
+
+---
+
 **The AI world reinvents itself every hour. This Claude Code skill keeps you current.** /last2hours researches your topic across Reddit, X, and the web from the last 2 hours by default, finds what the community is actually upvoting and sharing, and writes you a prompt that works right now. Whether it's Ralph Wiggum loops, Suno music prompts, or the latest Midjourney techniques, you'll prompt like someone who's been paying attention.
 
 Need a wider window? Use `--range` to look back further — hours, days, weeks, or months.
