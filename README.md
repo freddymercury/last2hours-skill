@@ -1,6 +1,8 @@
-# /last30days
+# /last2hours
 
-**The AI world reinvents itself every month. This Claude Code skill keeps you current.** /last30days researches your topic across Reddit, X, and the web from the last 30 days, finds what the community is actually upvoting and sharing, and writes you a prompt that works today, not six months ago. Whether it's Ralph Wiggum loops, Suno music prompts, or the latest Midjourney techniques, you'll prompt like someone who's been paying attention.
+**The AI world reinvents itself every hour. This Claude Code skill keeps you current.** /last2hours researches your topic across Reddit, X, and the web from the last 2 hours by default, finds what the community is actually upvoting and sharing, and writes you a prompt that works right now. Whether it's Ralph Wiggum loops, Suno music prompts, or the latest Midjourney techniques, you'll prompt like someone who's been paying attention.
+
+Need a wider window? Use `--range` to look back further — hours, days, weeks, or months.
 
 **Best for prompt research**: discover what prompting techniques actually work for any tool (ChatGPT, Midjourney, Claude, Figma AI, etc.) by learning from real community discussions and best practices.
 
@@ -10,33 +12,45 @@
 
 ```bash
 # Clone the repo
-git clone https://github.com/mvanhorn/last30days-skill.git ~/.claude/skills/last30days
+git clone https://github.com/freddymercury/last2hours-skill.git ~/.claude/skills/last2hours
 
 # Add your API keys
-mkdir -p ~/.config/last30days
-cat > ~/.config/last30days/.env << 'EOF'
+mkdir -p ~/.config/last2hours
+cat > ~/.config/last2hours/.env << 'EOF'
 OPENAI_API_KEY=sk-...
 XAI_API_KEY=xai-...
 EOF
-chmod 600 ~/.config/last30days/.env
+chmod 600 ~/.config/last2hours/.env
 ```
 
 ## Usage
 
 ```
-/last30days [topic]
-/last30days [topic] for [tool]
+/last2hours [topic]
+/last2hours [topic] for [tool]
+/last2hours [topic] --range "6 hours"
+/last2hours [topic] --range "3 days"
 ```
 
-Examples:
-- `/last30days prompting techniques for ChatGPT for legal questions`
-- `/last30days iOS app mockups for Nano Banana Pro`
-- `/last30days What are the best rap songs lately`
-- `/last30days remotion animations for Claude Code`
+The default time window is **2 hours**. Override it with `--range` using natural units:
+
+| Example | Window |
+|---------|--------|
+| `/last2hours AI news` | Last 2 hours (default) |
+| `/last2hours AI news --range "12 hours"` | Last 12 hours |
+| `/last2hours AI news --range "3 days"` | Last 3 days |
+| `/last2hours AI news --range "2 weeks"` | Last 2 weeks |
+| `/last2hours AI news --range "6 months"` | Last 6 months |
+
+More examples:
+- `/last2hours prompting techniques for ChatGPT for legal questions`
+- `/last2hours iOS app mockups for Nano Banana Pro --range "7 days"`
+- `/last2hours What are the best rap songs lately --range "30 days"`
+- `/last2hours remotion animations for Claude Code`
 
 ## What It Does
 
-1. **Researches** - Scans Reddit and X for discussions from the last 30 days
+1. **Researches** - Scans Reddit and X for discussions from your chosen time window (default: last 2 hours)
 2. **Synthesizes** - Identifies patterns, best practices, and what actually works
 3. **Delivers** - Either writes copy-paste-ready prompts for your target tool, or gives you a curated expert-level answer
 
@@ -51,7 +65,7 @@ Examples:
 
 ## Example: Legal Prompting (Hallucination Prevention)
 
-**Query:** `/last30days prompting techniques for chatgpt for legal questions`
+**Query:** `/last2hours prompting techniques for chatgpt for legal questions`
 
 **Research Output:**
 > The dominant theme is hallucination prevention - multiple sources discuss lawyers being fined or embarrassed for submitting fake case citations that ChatGPT fabricated. Key prompting strategies include: (1) using Deep Research mode or grounding tools with uploaded primary sources, (2) building "Hallucination Prevention Systems" into prompts that force epistemic honesty, (3) prompting for procedural questions rather than case law lookups, and (4) framing outputs as "issue-spotting" rather than legal advice. A major warning: chat logs are discoverable in litigation.
@@ -101,13 +115,13 @@ Important constraints:
 
 **The Result:** A comprehensive 2,500+ word analysis covering California's unlawful detainer process, SF Rent Ordinance nuances, trespasser vs. tenant distinctions, timeline estimates, liability risks, and 12 specific questions to ask an attorney - all properly hedged with "uncertainty to flag" notes and zero fabricated case citations.
 
-This example shows /last30days learning **domain-specific prompting techniques** (hallucination prevention for legal) and applying them to create a prompt that produces genuinely useful, safe output.
+This example shows /last2hours learning **domain-specific prompting techniques** (hallucination prevention for legal) and applying them to create a prompt that produces genuinely useful, safe output.
 
 ---
 
 ## Example: ClawdBot Use Cases (Community Research)
 
-**Query:** `/last30days best clawdbot use cases`
+**Query:** `/last2hours best clawdbot use cases`
 
 **Research Output:**
 > ClawdBot is a self-hosted AI assistant that runs on your devices and connects via messaging apps (Telegram, WhatsApp, Discord, Slack, iMessage). Unlike ChatGPT/Claude, it has persistent memory and can proactively message you. The killer feature is its 24/7 autonomous operation - it handles multi-day tasks, monitors for replies, and initiates contact.
@@ -136,13 +150,13 @@ This example shows /last30days learning **domain-specific prompting techniques**
 
 **Research Stats:** 9 Reddit threads (161 upvotes, 95 comments) + 19 X posts (2,018 likes, 96 reposts) from r/LocalLLaMA, r/selfhosted, @steipete, @danpeguine, @dreetje
 
-This example shows /last30days as a **product research tool** - discovering real-world use cases and community sentiment for any tool or product, complete with engagement metrics that tell you what people actually care about.
+This example shows /last2hours as a **product research tool** - discovering real-world use cases and community sentiment for any tool or product, complete with engagement metrics that tell you what people actually care about.
 
 ---
 
 ## Example: ClawdBot Setup (Installation Guide)
 
-**Query:** `/last30days how to best setup clawdbot`
+**Query:** `/last2hours how to best setup clawdbot`
 
 **Research Output:**
 > ClawdBot setup varies by deployment style - Docker is the most recommended path, but users are also deploying via bare metal and cloud VMs. The community has converged on key best practices: use the setup wizard for initial config, start with conservative hardware (you can scale up), and configure authentication before exposing any endpoints.
@@ -186,13 +200,13 @@ docker compose up -d
 
 **Research Stats:** 8 Reddit threads (128 upvotes) + 22 X posts (24,000+ likes) from r/selfhosted, r/LocalLLaMA, @dreetje, @steipete
 
-This example shows /last30days as a **setup guide aggregator** - pulling together scattered installation advice, gotchas, and best practices from real users who've already solved the problems you're about to encounter.
+This example shows /last2hours as a **setup guide aggregator** - pulling together scattered installation advice, gotchas, and best practices from real users who've already solved the problems you're about to encounter.
 
 ---
 
 ## Example: iOS App Mockup (Nano Banana Pro)
 
-**Query:** `/last30days prompting tips for nano banana pro for ios designs`
+**Query:** `/last2hours prompting tips for nano banana pro for ios designs`
 
 **Research Output:**
 > The community has converged on JSON-structured prompts for UI work - multiple viral posts from @brindleyai, @bananababydoll, and @fofrAI use detailed JSON with nested objects for subject, scene, and style. The key workflow from @fofrAI: take an existing image, have Gemini generate a JSON prompt from it, then iterate. For iOS specifically, @paji_a and @chongdashu both documented using Nano Banana Pro for iOS app mockup designs in "vibe coding" workflows.
@@ -255,13 +269,13 @@ This example shows /last30days as a **setup guide aggregator** - pulling togethe
   <img src="assets/swimmom-mockup.jpeg" width="400" alt="SwimMom iOS app mockup"/>
 </p>
 
-This example shows /last30days learning **AI image generation prompting patterns** (JSON structure, layer-based thinking, iOS design system references) and applying them to create a production-quality app mockup in one shot.
+This example shows /last2hours learning **AI image generation prompting patterns** (JSON structure, layer-based thinking, iOS design system references) and applying them to create a production-quality app mockup in one shot.
 
 ---
 
 ## Example: Top Claude Code Skills (Recommendations)
 
-**Query:** `/last30days top claude code skills`
+**Query:** `/last2hours top claude code skills`
 
 **Research Output:**
 > The Claude Code skills ecosystem has exploded with marketplaces, curated lists, and viral skill announcements. The Remotion video skill got 17.3K likes on X. SkillsMP emerged as a marketplace with 60-87K+ skills. Multiple GitHub repos (awesome-claude-skills, Superpowers) are actively curated.
@@ -289,13 +303,13 @@ This example shows /last30days learning **AI image generation prompting patterns
 
 **Research Stats:** 4 Reddit threads (238 upvotes, 156 comments) + 15 X posts (28K+ likes, 2.8K reposts) from r/ClaudeCode, r/ClaudeAI, @Remotion, @milesdeutscher
 
-This example shows /last30days as a **discovery tool** - finding the most popular resources in a rapidly evolving ecosystem by tracking what the community is actually sharing and upvoting.
+This example shows /last2hours as a **discovery tool** - finding the most popular resources in a rapidly evolving ecosystem by tracking what the community is actually sharing and upvoting.
 
 ---
 
 ## Example: Discover Viral Trends (Dog as Human)
 
-**Query:** `/last30days using ChatGPT to make images of dogs`
+**Query:** `/last2hours using ChatGPT to make images of dogs`
 
 **Research Output:**
 > The Reddit community is obsessed with the "dog as human" trend - uploading photos of their dogs and asking ChatGPT to show what they'd look like as a person (threads with 600-900+ upvotes). Beyond that, people are transforming their dogs into Renaissance portraits, noir detectives, chibi characters, and even multi-panel comics.
@@ -331,24 +345,24 @@ portrait photo, not a cartoon.
 
 Same golden fur → red hair. Same tongue out. Same harness. Same pink tag. ChatGPT nailed it.
 
-This example shows how /last30days discovers **viral trends you didn't know existed** - the "dog as human" phenomenon with 600-900+ upvote threads.
+This example shows how /last2hours discovers **viral trends you didn't know existed** - the "dog as human" phenomenon with 600-900+ upvote threads.
 
 ---
 
 ## Example: Remotion Launch Video
 
-**Query:** `/last30days research best practices for beautiful remotion animation videos in claude code`
+**Query:** `/last2hours research best practices for beautiful remotion animation videos in claude code`
 
 **Research Output:**
 > The Remotion + Claude Code combination has emerged as a powerful workflow. Users consistently report that simple, clear prompts with scene-by-scene descriptions yield the best results. Key insights: iteration is essential, most "beautiful" videos come from back-and-forth refinement rather than one-shot prompts.
 
-**Then asked:** "Can you make a prompt for a 50 second launch video for my /last30days skill?"
+**Then asked:** "Can you make a prompt for a 50 second launch video for my /last2hours skill?"
 
 **Generated Prompt:**
 
 ```
-Create a 50-second launch video for "/last30days" - a Claude Code skill that
-researches any topic across Reddit and X from the last 30 days, then writes
+Create a 50-second launch video for "/last2hours" - a Claude Code skill that
+researches any topic across Reddit and X, then writes
 copy-paste-ready prompts.
 
 SCENE 1 (0-8s): The Problem
@@ -360,12 +374,12 @@ Slight camera shake to convey chaos.
 
 SCENE 2 (8-16s): The Solution Reveal
 Clean wipe transition. Calm, modern gradient background (deep purple to blue).
-"/last30days" types in with a terminal cursor, monospace font.
+"/last2hours" types in with a terminal cursor, monospace font.
 Subtitle fades in below: "Instant expertise. Real prompts."
 
 SCENE 3 (16-28s): How It Works
 Split into 3 animated steps that slide in sequentially:
-1. [Reddit + X icons merge] "Scans Reddit & X from the last 30 days"
+1. [Reddit + X icons merge] "Scans Reddit & X from your time window"
 2. [Brain/lightbulb icon] "Synthesizes what actually works"
 3. [Document with sparkle] "Writes prompts you can copy-paste"
 
@@ -373,7 +387,7 @@ Each step has a subtle bounce animation on entry.
 
 SCENE 4 (28-40s): Live Demo Feel
 Simulate a terminal. Show:
-> /last30days remotion animations
+> /last2hours remotion animations
 Then a progress indicator animates.
 Results appear: "Analyzed 28 sources..."
 Stats counter animates up: "294 upvotes • 1,273 likes"
@@ -382,7 +396,7 @@ Then: a prompt card slides in showing a sample output.
 SCENE 5 (40-50s): Call to Action
 Zoom out slightly. Everything fades except the logo.
 Text animates in: "Research any topic. Get prompts that work."
-GitHub icon + "github.com/mvanhorn/last30days-skill"
+GitHub icon + "github.com/freddymercury/last2hours-skill"
 Tagline: "A Claude Code Skill"
 
 STYLE NOTES:
@@ -398,7 +412,7 @@ This prompt was generated based on research from 10 Reddit threads (294 upvotes)
 
 ## Example: Photorealistic Portraits (Aging Grid)
 
-**Query:** `/last30days photorealistic people in nano banana pro`
+**Query:** `/last2hours photorealistic people in nano banana pro`
 
 **Research Output:**
 > JSON prompts are the dominant format for photorealistic people in Nano Banana Pro. Nearly every viral X post (4,400+ likes total) uses structured JSON with specific fields rather than natural language. The key is specifying demographics, skin texture, lighting, and camera settings in a structured way.
@@ -455,13 +469,13 @@ This prompt was generated based on research from 10 Reddit threads (294 upvotes)
 
 Same freckles. Same heterochromia. Same bone structure. Four life stages in one coherent image.
 
-This example shows /last30days learning **advanced image generation patterns** (multi-panel consistency, face preservation across variations) and applying them to create a complex composite image.
+This example shows /last2hours learning **advanced image generation patterns** (multi-panel consistency, face preservation across variations) and applying them to create a complex composite image.
 
 ---
 
 ## Example: Best Rap Songs Right Now
 
-**Query:** `/last30days What are the best rap songs lately`
+**Query:** `/last2hours What are the best rap songs lately`
 
 **Research Output:**
 > The hip-hop community is buzzing about a strong wave of new releases in early 2026. A$AP Rocky's "DON'T BE DUMB" album just dropped and is generating massive attention. Looking back at 2025, Kendrick Lamar's "GNX" dominated streaming with 2.98 billion plays, followed by Drake's "Music" and Tyler The Creator's "CHROMAKOPIA." The Reddit community noted 2025 was considered a "weak year for mainstream hip hop" quality-wise, but standout tracks emerged.
@@ -487,13 +501,13 @@ Fresh Drops (Jan 2026):
 
 **Research Stats:** 17 Reddit threads (2,566 upvotes) + 19 X posts (20,000+ likes) from r/hiphopheads, r/rap, @HipHopAllDay, @DailyRapFacts
 
-This example shows /last30days as a **pure research tool** - no target tool needed. Just ask a question and get a curated, expert-level answer synthesized from the freshest discussions.
+This example shows /last2hours as a **pure research tool** - no target tool needed. Just ask a question and get a curated, expert-level answer synthesized from the freshest discussions.
 
 ---
 
 ## Example: DeepSeek R1 (Hot AI News)
 
-**Query:** `/last30days what are people saying about DeepSeek R1`
+**Query:** `/last2hours what are people saying about DeepSeek R1`
 
 **Research Output:**
 > The AI community is divided on DeepSeek R1. Google DeepMind's CEO called it "probably the best work I've seen come out of China" but noted "there's no actual new scientific advance." Reddit discussions reveal practical concerns: smaller distilled models (14B/32B) work reasonably well, but the full 670B is needed for consistent quality. Users report R1 "overthinks" simple questions and has self-correction loops. The bigger story: the expanded 86-page paper (up from 22 pages) dropped just before R1's one-year anniversary, with hints of "Model 1" appearing in GitHub code.
@@ -519,13 +533,13 @@ Negative:
 
 **Research Stats:** 10 Reddit threads (1,200+ upvotes) + 10 X posts (5,000+ likes) from r/LocalLLaMA, r/DeepSeek, r/deeplearning
 
-This example shows /last30days as a **news research tool** - getting the real community sentiment on hot AI topics, not just headlines.
+This example shows /last2hours as a **news research tool** - getting the real community sentiment on hot AI topics, not just headlines.
 
 ---
 
 ## Example: Cursor Rules Best Practices
 
-**Query:** `/last30days best practices for cursor rules files for Cursor`
+**Query:** `/last2hours best practices for cursor rules files for Cursor`
 
 **Research Output:**
 > The Cursor community has converged on clear best practices for .cursorrules files. The key shift: move from a single .cursorrules file to the .cursor/rules/ directory with multiple .mdc files. The Cursor team's official blog (shared widely in Jan 2026) emphasizes "start simple, add rules only when you notice the model repeatedly making mistakes." Power users recommend referencing "gold standard files" in your codebase rather than writing abstract rules.
@@ -559,13 +573,13 @@ alwaysApply: true
 
 **Research Stats:** 24 Reddit threads (500+ upvotes) + 16 X posts (5,000+ likes) from r/cursor, @cursor_ai, @Hesamation
 
-This example shows /last30days researching **coding AI tool best practices** - getting real-world workflows from developers using Cursor, not just documentation.
+This example shows /last2hours researching **coding AI tool best practices** - getting real-world workflows from developers using Cursor, not just documentation.
 
 ---
 
 ## Example: Suno AI Music (Simple Mode)
 
-**Query:** `/last30days prompt advice for using suno to make killer songs in simple mode`
+**Query:** `/last2hours prompt advice for using suno to make killer songs in simple mode`
 
 **Research Output:**
 > Suno simple mode users get dramatically better results by treating the prompt box like a conversational request rather than just dropping in genre tags. Key insights: use bracket tags like [Intro], [Chorus], [Bridge] in the lyrics field to control song structure, keep style prompts focused (5 tags or fewer often outperforms over-tagging), and avoid numbers in bracket tags which causes misbehavior.
@@ -624,13 +638,13 @@ Or am I wide awake and in too deep
 
 **The Result:** 🎵 [Listen to the track](assets/claude-code-rap.mp3)
 
-This example shows /last30days learning **music AI prompting patterns** (bracket structure, conversational style descriptions) and generating a complete song prompt that Suno turned into an actual banger.
+This example shows /last2hours learning **music AI prompting patterns** (bracket structure, conversational style descriptions) and generating a complete song prompt that Suno turned into an actual banger.
 
 ---
 
 ## Example: Developer Workflow Discovery (Codex + Claude Code)
 
-**Query:** `/last30days how do I use Codex with Claude Code on same app to make it better`
+**Query:** `/last2hours how do I use Codex with Claude Code on same app to make it better`
 
 **Research Output:**
 > Developers are combining Claude Code and Codex through MCP integration and custom plugins. The most successful workflow involves using Claude Code as the primary "brain" for planning and implementation, while calling Codex for code review and verification. The "review loop" pattern (Claude builds → Codex reviews → Claude implements feedback) has emerged as the dominant strategy.
@@ -685,7 +699,7 @@ Focus areas for Codex review: bugs, edge cases, security, performance
 
 **Research Stats:** 17 Reddit threads (906 upvotes) + 20 X posts (3,750 likes) from r/ClaudeCode, r/ClaudeAI
 
-This example shows /last30days discovering **emerging developer workflows** - real patterns the community has developed for combining AI tools that you wouldn't find in official docs.
+This example shows /last2hours discovering **emerging developer workflows** - real patterns the community has developed for combining AI tools that you wouldn't find in official docs.
 
 ---
 
@@ -693,6 +707,7 @@ This example shows /last30days discovering **emerging developer workflows** - re
 
 | Flag | Description |
 |------|-------------|
+| `--range "N units"` | Time window to search (default: `"2 hours"`). Accepts hours, days, weeks, months. |
 | `--quick` | Faster research, fewer sources (8-12 each) |
 | `--deep` | Comprehensive research (50-70 Reddit, 40-60 X) |
 | `--debug` | Verbose logging for troubleshooting |
@@ -716,6 +731,6 @@ The skill uses:
 
 ---
 
-*30 days of research. 30 seconds of work.*
+*Real-time research. Real prompts.*
 
 *Prompt research. Trend discovery. Expert answers.*

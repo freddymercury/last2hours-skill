@@ -8,7 +8,7 @@ disable-model-invocation: true
 allowed-tools: Bash, Read, Write, AskUserQuestion, WebSearch
 ---
 
-# last30days: Research Any Topic from the Last 2 Hours
+# last2hours: Research Any Topic from the Last 2 Hours
 
 Research ANY topic across Reddit, X, and the web. Surface what people are actually discussing, recommending, and debating right now.
 
@@ -63,9 +63,9 @@ The skill works in three modes based on available API keys:
 If the user wants to add API keys for better results:
 
 ```bash
-mkdir -p ~/.config/last30days
-cat > ~/.config/last30days/.env << 'ENVEOF'
-# last30days API Configuration
+mkdir -p ~/.config/last2hours
+cat > ~/.config/last2hours/.env << 'ENVEOF'
+# last2hours API Configuration
 # Both keys are optional - skill works with WebSearch fallback
 
 # For Reddit research (uses OpenAI's web_search tool)
@@ -75,8 +75,8 @@ OPENAI_API_KEY=
 XAI_API_KEY=
 ENVEOF
 
-chmod 600 ~/.config/last30days/.env
-echo "Config created at ~/.config/last30days/.env"
+chmod 600 ~/.config/last2hours/.env
+echo "Config created at ~/.config/last2hours/.env"
 echo "Edit to add your API keys for enhanced research."
 ```
 
@@ -90,7 +90,7 @@ echo "Edit to add your API keys for enhanced research."
 
 **Step 1: Run the research script**
 ```bash
-python3 ~/.claude/skills/last30days/scripts/last30days.py "$ARGUMENTS" --emit=compact 2>&1
+python3 ~/.claude/skills/last2hours/scripts/last30days.py "$ARGUMENTS" --emit=compact 2>&1
 ```
 
 The script will automatically:
@@ -256,7 +256,7 @@ For **web-only mode** (no API keys):
 ├─ 🌐 Web: {n} pages │ {domains}
 └─ Top sources: {author1} on {site1}, {author2} on {site2}
 
-💡 Want engagement metrics? Add API keys to ~/.config/last30days/.env
+💡 Want engagement metrics? Add API keys to ~/.config/last2hours/.env
    - OPENAI_API_KEY → Reddit (real upvotes & comments)
    - XAI_API_KEY → X/Twitter (real likes & reposts)
 ```
@@ -387,5 +387,5 @@ For **web-only mode**:
 
 Want another prompt? Just tell me what you're creating next.
 
-💡 Unlock Reddit & X data: Add API keys to ~/.config/last30days/.env
+💡 Unlock Reddit & X data: Add API keys to ~/.config/last2hours/.env
 ```

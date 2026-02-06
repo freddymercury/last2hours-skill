@@ -1,4 +1,4 @@
-"""Output rendering for last30days skill."""
+"""Output rendering for last2hours skill."""
 
 import json
 from pathlib import Path
@@ -6,12 +6,12 @@ from typing import List, Optional
 
 from . import schema
 
-OUTPUT_DIR = Path.home() / ".local" / "share" / "last30days" / "out"
+OUTPUT_DIR = Path.home() / ".local" / "share" / "last2hours" / "out"
 
 
 def ensure_output_dir():
-    """Ensure output directory exists."""
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    """Ensure output directory exists with secure permissions."""
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True, mode=0o700)
 
 
 def _assess_data_freshness(report: schema.Report) -> dict:
@@ -67,7 +67,7 @@ def render_compact(report: schema.Report, limit: int = 15, missing_keys: str = "
         lines.append("**⚡ Want better results?** Add API keys to unlock Reddit & X data:")
         lines.append("- `OPENAI_API_KEY` → Reddit threads with real upvotes & comments")
         lines.append("- `XAI_API_KEY` → X posts with real likes & reposts")
-        lines.append("- Edit `~/.config/last30days/.env` to add keys")
+        lines.append("- Edit `~/.config/last2hours/.env` to add keys")
         lines.append("---")
         lines.append("")
 
@@ -360,8 +360,8 @@ def write_outputs(
     with open(OUTPUT_DIR / "report.md", 'w') as f:
         f.write(render_full_report(report))
 
-    # last30days.context.md
-    with open(OUTPUT_DIR / "last30days.context.md", 'w') as f:
+    # last2hours.context.md
+    with open(OUTPUT_DIR / "last2hours.context.md", 'w') as f:
         f.write(render_context_snippet(report))
 
     # Raw responses
@@ -380,4 +380,4 @@ def write_outputs(
 
 def get_context_path() -> str:
     """Get path to context file."""
-    return str(OUTPUT_DIR / "last30days.context.md")
+    return str(OUTPUT_DIR / "last2hours.context.md")

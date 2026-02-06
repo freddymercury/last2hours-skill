@@ -1,10 +1,51 @@
 """Normalization of raw API data to canonical schema."""
 
 from typing import Any, Dict, List, TypeVar, Union
+from urllib.parse import urlparse
 
 from . import dates, schema
 
 T = TypeVar("T", schema.RedditItem, schema.XItem, schema.WebSearchItem)
+
+
+def is_valid_url(url: str) -> bool:
+    """Validate that a URL is a safe HTTP(S) URL.
+
+    Security: Prevents file://, javascript:, and other dangerous schemes.
+    """
+    if not isinstance(url, str) or not url:
+        return False
+    try:
+        parsed = urlparse(url)
+        return parsed.scheme in ("http", "https") and bool(parsed.netloc)
+    except Exception:
+        return False
+
+
+def is_valid_reddit_url(url: str) -> bool:
+    """Validate that a URL is from reddit.com.
+
+    Security: Uses exact hostname match, not substring check.
+    """
+    if not is_valid_url(url):
+        return False
+    try:
+        parsed = urlparse(url)
+        # Exact hostname match to prevent SSRF via reddit.com@evil.com
+        return parsed.netloc in ("reddit.com", "www.reddit.com", "old.reddit.com")
+    except Exception:
+        return False
+
+
+def is_valid_x_url(url: str) -> bool:
+    """Validate that a URL is from x.com or twitter.com."""
+    if not is_valid_url(url):
+        return False
+    try:
+        parsed = urlparse(url)
+        return parsed.netloc in ("x.com", "www.x.com", "twitter.com", "www.twitter.com")
+    except Exception:
+        return False
 
 
 def filter_by_date_range(
@@ -65,6 +106,11 @@ def normalize_reddit_items(
     normalized = []
 
     for item in items:
+        # Security: Validate URL before processing
+        url = item.get("url", "")
+        if not is_valid_url(url):
+            continue  # Skip items with invalid/dangerous URLs
+
         # Parse engagement
         engagement = None
         eng_raw = item.get("engagement")
@@ -75,15 +121,18 @@ def normalize_reddit_items(
                 upvote_ratio=eng_raw.get("upvote_ratio"),
             )
 
-        # Parse comments
+        # Parse comments (validate comment URLs too)
         top_comments = []
         for c in item.get("top_comments", []):
+            comment_url = c.get("url", "")
+            if comment_url and not is_valid_url(comment_url):
+                comment_url = ""  # Clear invalid URLs
             top_comments.append(schema.Comment(
                 score=c.get("score", 0),
                 date=c.get("date"),
                 author=c.get("author", ""),
                 excerpt=c.get("excerpt", ""),
-                url=c.get("url", ""),
+                url=comment_url,
             ))
 
         # Determine date confidence
@@ -93,7 +142,7 @@ def normalize_reddit_items(
         normalized.append(schema.RedditItem(
             id=item.get("id", ""),
             title=item.get("title", ""),
-            url=item.get("url", ""),
+            url=url,
             subreddit=item.get("subreddit", ""),
             date=date_str,
             date_confidence=date_confidence,
@@ -125,6 +174,11 @@ def normalize_x_items(
     normalized = []
 
     for item in items:
+        # Security: Validate URL before processing
+        url = item.get("url", "")
+        if not is_valid_url(url):
+            continue  # Skip items with invalid/dangerous URLs
+
         # Parse engagement
         engagement = None
         eng_raw = item.get("engagement")
@@ -143,7 +197,7 @@ def normalize_x_items(
         normalized.append(schema.XItem(
             id=item.get("id", ""),
             text=item.get("text", ""),
-            url=item.get("url", ""),
+            url=url,
             author_handle=item.get("author_handle", ""),
             date=date_str,
             date_confidence=date_confidence,

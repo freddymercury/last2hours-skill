@@ -1,4 +1,4 @@
-"""Caching utilities for last30days skill."""
+"""Caching utilities for last2hours skill."""
 
 import hashlib
 import json
@@ -7,14 +7,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
-CACHE_DIR = Path.home() / ".cache" / "last30days"
+CACHE_DIR = Path.home() / ".cache" / "last2hours"
 DEFAULT_TTL_HOURS = 24
 MODEL_CACHE_TTL_DAYS = 7
 
 
 def ensure_cache_dir():
-    """Ensure cache directory exists."""
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    """Ensure cache directory exists with secure permissions."""
+    CACHE_DIR.mkdir(parents=True, exist_ok=True, mode=0o700)
 
 
 def get_cache_key(topic: str, from_date: str, to_date: str, sources: str) -> str:

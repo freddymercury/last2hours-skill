@@ -1,18 +1,33 @@
-"""Environment and API key management for last30days skill."""
+"""Environment and API key management for last2hours skill."""
 
 import os
+import sys
 from pathlib import Path
 from typing import Optional, Dict, Any
 
-CONFIG_DIR = Path.home() / ".config" / "last30days"
+CONFIG_DIR = Path.home() / ".config" / "last2hours"
 CONFIG_FILE = CONFIG_DIR / ".env"
 
 
 def load_env_file(path: Path) -> Dict[str, str]:
-    """Load environment variables from a file."""
+    """Load environment variables from a file.
+
+    Security: Warns if file permissions are too open.
+    """
     env = {}
     if not path.exists():
         return env
+
+    # Security: Check file permissions
+    try:
+        stat = path.stat()
+        if stat.st_mode & 0o077:  # Group or others can read
+            sys.stderr.write(
+                f"⚠️  WARNING: {path} has loose permissions. "
+                f"Run: chmod 600 {path}\n"
+            )
+    except OSError:
+        pass
 
     with open(path, 'r') as f:
         for line in f:
@@ -32,7 +47,7 @@ def load_env_file(path: Path) -> Dict[str, str]:
 
 
 def get_config() -> Dict[str, Any]:
-    """Load configuration from ~/.config/last30days/.env and environment."""
+    """Load configuration from ~/.config/last2hours/.env and environment."""
     # Load from config file first
     file_env = load_env_file(CONFIG_FILE)
 
@@ -108,7 +123,7 @@ def validate_sources(requested: str, available: str, include_web: bool = False) 
         elif requested == 'web':
             return 'web', None
         else:
-            return 'web', f"No API keys configured. Using WebSearch fallback. Add keys to ~/.config/last30days/.env for Reddit/X."
+            return 'web', f"No API keys configured. Using WebSearch fallback. Add keys to ~/.config/last2hours/.env for Reddit/X."
 
     if requested == 'auto':
         # Add web to sources if include_web is set
