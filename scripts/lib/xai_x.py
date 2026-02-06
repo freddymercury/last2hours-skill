@@ -25,7 +25,10 @@ DEPTH_CONFIG = {
 
 X_SEARCH_PROMPT = """You have access to real-time X (Twitter) data. Search for posts about: {topic}
 
-Focus on posts from {from_date} to {to_date}. Find {min_items}-{max_items} high-quality, relevant posts.
+TIME WINDOW: {from_date} to {to_date}
+{time_emphasis}
+
+Find {min_items}-{max_items} high-quality, relevant posts.
 
 IMPORTANT: Return ONLY valid JSON in this exact format, no other text:
 {{
@@ -53,6 +56,26 @@ Rules:
 - engagement can be null if unknown
 - Include diverse voices/accounts if applicable
 - Prefer posts with substantive content, not just links"""
+
+
+def _get_time_emphasis(from_date: str, to_date: str) -> str:
+    """Generate time emphasis text based on the date range."""
+    from datetime import datetime
+    # Check if this is a short time window (contains T means datetime precision)
+    if "T" in from_date:
+        return "⚡ SHORT TIME WINDOW - Focus on the most recent posts from the last few hours."
+    # Otherwise check the date range
+    try:
+        start = datetime.strptime(from_date, "%Y-%m-%d")
+        end = datetime.strptime(to_date, "%Y-%m-%d")
+        days = (end - start).days
+        if days <= 3:
+            return "⚡ RECENT CONTENT PRIORITY - Focus on posts from the last few days."
+        elif days <= 7:
+            return "Focus on posts from this week."
+    except ValueError:
+        pass
+    return ""
 
 
 def search_x(
@@ -92,6 +115,7 @@ def search_x(
     timeout = 90 if depth == "quick" else 120 if depth == "default" else 180
 
     # Use Agent Tools API with x_search tool
+    time_emphasis = _get_time_emphasis(from_date, to_date)
     payload = {
         "model": model,
         "tools": [
@@ -106,6 +130,7 @@ def search_x(
                     to_date=to_date,
                     min_items=min_items,
                     max_items=max_items,
+                    time_emphasis=time_emphasis,
                 ),
             }
         ],

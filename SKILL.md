@@ -1,7 +1,7 @@
 ---
 name: last2hours
 description: Research a topic from the last 2 hours on Reddit + X + Web, become an expert, and write copy-paste-ready prompts for the user's target tool.
-argument-hint: "[topic] for [tool]" or "[topic]"
+argument-hint: "[topic]" or "[topic] --range \"3 days\""
 context: fork
 agent: Explore
 disable-model-invocation: true
@@ -90,7 +90,7 @@ echo "Edit to add your API keys for enhanced research."
 
 **Step 1: Run the research script**
 ```bash
-python3 ~/.claude/skills/last2hours/scripts/last30days.py "$ARGUMENTS" --emit=compact 2>&1
+python3 ~/.claude/skills/last2hours/scripts/last2hours.py "$ARGUMENTS" --emit=compact 2>&1
 ```
 
 The script will automatically:

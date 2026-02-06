@@ -48,6 +48,20 @@ def is_valid_x_url(url: str) -> bool:
         return False
 
 
+def _normalize_date_for_comparison(date_str: str) -> str:
+    """Normalize a date string for comparison.
+
+    Handles both YYYY-MM-DD and ISO 8601 datetime formats.
+    Returns YYYY-MM-DD portion for comparison.
+    """
+    if not date_str:
+        return ""
+    # If it's a full datetime (contains T), extract just the date part
+    if "T" in date_str:
+        return date_str.split("T")[0]
+    return date_str
+
+
 def filter_by_date_range(
     items: List[T],
     from_date: str,
@@ -61,13 +75,17 @@ def filter_by_date_range(
 
     Args:
         items: List of items to filter
-        from_date: Start date (YYYY-MM-DD) - exclude items before this
-        to_date: End date (YYYY-MM-DD) - exclude items after this
+        from_date: Start date (YYYY-MM-DD or ISO datetime) - exclude items before this
+        to_date: End date (YYYY-MM-DD or ISO datetime) - exclude items after this
         require_date: If True, also remove items with no date
 
     Returns:
         Filtered list with only items in range (or unknown dates if not required)
     """
+    # Normalize range boundaries for comparison
+    from_date_normalized = _normalize_date_for_comparison(from_date)
+    to_date_normalized = _normalize_date_for_comparison(to_date)
+
     result = []
     for item in items:
         if item.date is None:
@@ -75,12 +93,15 @@ def filter_by_date_range(
                 result.append(item)  # Keep unknown dates (with scoring penalty)
             continue
 
+        # Normalize item date for comparison
+        item_date_normalized = _normalize_date_for_comparison(item.date)
+
         # Hard filter: if date is before from_date, exclude
-        if item.date < from_date:
+        if item_date_normalized < from_date_normalized:
             continue  # DROP - too old
 
         # Hard filter: if date is after to_date, exclude (likely parsing error)
-        if item.date > to_date:
+        if item_date_normalized > to_date_normalized:
             continue  # DROP - future date
 
         result.append(item)

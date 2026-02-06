@@ -3,7 +3,7 @@
 last2hours - Research a topic from the last 2 hours on Reddit + X.
 
 Usage:
-    python3 last30days.py <topic> [options]
+    python3 last2hours.py <topic> [options]
 
 Options:
     --range=RANGE       Time range to search (default: "2 hours")
@@ -324,7 +324,7 @@ def main():
 
     # Enable debug logging if requested
     if args.debug:
-        os.environ["LAST30DAYS_DEBUG"] = "1"
+        os.environ["LAST2HOURS_DEBUG"] = "1"
         # Re-import http to pick up debug flag
         from lib import http as http_module
         http_module.DEBUG = True
@@ -342,7 +342,7 @@ def main():
 
     if not args.topic:
         print("Error: Please provide a topic to research.", file=sys.stderr)
-        print("Usage: python3 last30days.py <topic> [options]", file=sys.stderr)
+        print("Usage: python3 last2hours.py <topic> [options]", file=sys.stderr)
         sys.exit(1)
 
     # Load config

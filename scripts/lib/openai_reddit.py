@@ -52,6 +52,9 @@ DEPTH_CONFIG = {
 
 REDDIT_SEARCH_PROMPT = """Find Reddit discussion threads about: {topic}
 
+TIME WINDOW: {from_date} to {to_date}
+{time_emphasis}
+
 STEP 1: EXTRACT THE CORE SUBJECT
 Get the MAIN NOUN/PRODUCT/TOPIC:
 - "best nano banana prompting practices" → "nano banana"
@@ -91,6 +94,26 @@ Return JSON:
     }}
   ]
 }}"""
+
+
+def _get_time_emphasis(from_date: str, to_date: str) -> str:
+    """Generate time emphasis text based on the date range."""
+    # Check if this is a short time window (contains T means datetime precision)
+    if "T" in from_date:
+        return "⚡ SHORT TIME WINDOW - Focus on the most recent posts from today/yesterday."
+    # Otherwise check the date range
+    try:
+        from datetime import datetime
+        start = datetime.strptime(from_date, "%Y-%m-%d")
+        end = datetime.strptime(to_date, "%Y-%m-%d")
+        days = (end - start).days
+        if days <= 3:
+            return "⚡ RECENT CONTENT PRIORITY - Focus on posts from the last few days."
+        elif days <= 7:
+            return "Focus on posts from this week."
+    except ValueError:
+        pass
+    return ""
 
 
 def _extract_core_subject(topic: str) -> str:
@@ -145,12 +168,14 @@ def search_reddit(
 
     # Note: allowed_domains accepts base domain, not subdomains
     # We rely on prompt to filter out developers.reddit.com, etc.
+    time_emphasis = _get_time_emphasis(from_date, to_date)
     input_text = REDDIT_SEARCH_PROMPT.format(
         topic=topic,
         from_date=from_date,
         to_date=to_date,
         min_items=min_items,
         max_items=max_items,
+        time_emphasis=time_emphasis,
     )
 
     last_error = None

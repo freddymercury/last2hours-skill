@@ -143,13 +143,23 @@ def timestamp_to_date(ts: Optional[float]) -> Optional[str]:
         return None
 
 
+def _extract_date_part(date_str: str) -> str:
+    """Extract YYYY-MM-DD from a date string (handles datetime too)."""
+    if not date_str:
+        return ""
+    # If it's a full datetime (contains T), extract just the date part
+    if "T" in date_str:
+        return date_str.split("T")[0]
+    return date_str
+
+
 def get_date_confidence(date_str: Optional[str], from_date: str, to_date: str) -> str:
     """Determine confidence level for a date.
 
     Args:
-        date_str: The date to check (YYYY-MM-DD or None)
-        from_date: Start of valid range (YYYY-MM-DD)
-        to_date: End of valid range (YYYY-MM-DD)
+        date_str: The date to check (YYYY-MM-DD or ISO datetime or None)
+        from_date: Start of valid range (YYYY-MM-DD or ISO datetime)
+        to_date: End of valid range (YYYY-MM-DD or ISO datetime)
 
     Returns:
         'high', 'med', or 'low'
@@ -158,9 +168,14 @@ def get_date_confidence(date_str: Optional[str], from_date: str, to_date: str) -
         return 'low'
 
     try:
-        dt = datetime.strptime(date_str, "%Y-%m-%d").date()
-        start = datetime.strptime(from_date, "%Y-%m-%d").date()
-        end = datetime.strptime(to_date, "%Y-%m-%d").date()
+        # Extract date portions for comparison
+        date_part = _extract_date_part(date_str)
+        start_part = _extract_date_part(from_date)
+        end_part = _extract_date_part(to_date)
+
+        dt = datetime.strptime(date_part, "%Y-%m-%d").date()
+        start = datetime.strptime(start_part, "%Y-%m-%d").date()
+        end = datetime.strptime(end_part, "%Y-%m-%d").date()
 
         if start <= dt <= end:
             return 'high'

@@ -3,13 +3,54 @@
 import hashlib
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 CACHE_DIR = Path.home() / ".cache" / "last2hours"
 DEFAULT_TTL_HOURS = 24
 MODEL_CACHE_TTL_DAYS = 7
+
+# Minimum TTL to avoid excessive API calls
+MIN_TTL_MINUTES = 15
+
+
+def calculate_ttl(duration: Union[int, timedelta]) -> float:
+    """Calculate appropriate cache TTL based on search duration.
+
+    Short search windows (2 hours) should have short TTLs (30 min).
+    Long search windows (30 days) should have longer TTLs (24 hours).
+
+    Args:
+        duration: Search duration - either days (int) or timedelta
+
+    Returns:
+        TTL in hours
+    """
+    # Convert int (days) to timedelta for backwards compatibility
+    if isinstance(duration, int):
+        duration = timedelta(days=duration)
+
+    total_hours = duration.total_seconds() / 3600
+
+    if total_hours <= 2:
+        # 2 hours or less: cache for 30 minutes
+        return 0.5
+    elif total_hours <= 6:
+        # Up to 6 hours: cache for 1 hour
+        return 1.0
+    elif total_hours <= 24:
+        # Up to 1 day: cache for 2 hours
+        return 2.0
+    elif total_hours <= 72:
+        # Up to 3 days: cache for 6 hours
+        return 6.0
+    elif total_hours <= 168:
+        # Up to 1 week: cache for 12 hours
+        return 12.0
+    else:
+        # Longer periods: cache for 24 hours
+        return DEFAULT_TTL_HOURS
 
 
 def ensure_cache_dir():

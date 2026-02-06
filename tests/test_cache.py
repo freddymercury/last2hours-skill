@@ -2,6 +2,7 @@
 
 import sys
 import unittest
+from datetime import timedelta
 from pathlib import Path
 
 # Add lib to path
@@ -53,6 +54,41 @@ class TestModelCache(unittest.TestCase):
         result = cache.get_cached_model("nonexistent_provider")
         # May be None or a cached value, but should not error
         self.assertTrue(result is None or isinstance(result, str))
+
+
+class TestCalculateTTL(unittest.TestCase):
+    def test_2_hours_gets_30_min_ttl(self):
+        result = cache.calculate_ttl(timedelta(hours=2))
+        self.assertEqual(result, 0.5)  # 30 minutes
+
+    def test_6_hours_gets_1_hour_ttl(self):
+        result = cache.calculate_ttl(timedelta(hours=6))
+        self.assertEqual(result, 1.0)
+
+    def test_1_day_gets_2_hour_ttl(self):
+        result = cache.calculate_ttl(timedelta(days=1))
+        self.assertEqual(result, 2.0)
+
+    def test_3_days_gets_6_hour_ttl(self):
+        result = cache.calculate_ttl(timedelta(days=3))
+        self.assertEqual(result, 6.0)
+
+    def test_1_week_gets_12_hour_ttl(self):
+        result = cache.calculate_ttl(timedelta(weeks=1))
+        self.assertEqual(result, 12.0)
+
+    def test_30_days_gets_24_hour_ttl(self):
+        result = cache.calculate_ttl(timedelta(days=30))
+        self.assertEqual(result, 24.0)
+
+    def test_backwards_compat_with_int(self):
+        # int is treated as days
+        result = cache.calculate_ttl(30)
+        self.assertEqual(result, 24.0)
+
+    def test_1_day_int_gets_2_hour_ttl(self):
+        result = cache.calculate_ttl(1)
+        self.assertEqual(result, 2.0)
 
 
 if __name__ == "__main__":
