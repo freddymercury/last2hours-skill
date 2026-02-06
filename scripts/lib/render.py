@@ -15,7 +15,7 @@ def ensure_output_dir():
 
 
 def _assess_data_freshness(report: schema.Report) -> dict:
-    """Assess how much data is actually from the last 30 days."""
+    """Assess how much data is actually from the requested time range."""
     reddit_recent = sum(1 for r in report.reddit if r.date and r.date >= report.range_from)
     x_recent = sum(1 for x in report.x if x.date and x.date >= report.range_from)
     web_recent = sum(1 for w in report.web if w.date and w.date >= report.range_from)
@@ -54,7 +54,7 @@ def render_compact(report: schema.Report, limit: int = 15, missing_keys: str = "
     # Assess data freshness and add honesty warning if needed
     freshness = _assess_data_freshness(report)
     if freshness["is_sparse"]:
-        lines.append("**⚠️ LIMITED RECENT DATA** - Few discussions from the last 30 days.")
+        lines.append("**⚠️ LIMITED RECENT DATA** - Few discussions from the requested time range.")
         lines.append(f"Only {freshness['total_recent']} item(s) confirmed from {report.range_from} to {report.range_to}.")
         lines.append("Results below may include older/evergreen content. Be transparent with the user about this.")
         lines.append("")
@@ -203,7 +203,7 @@ def render_context_snippet(report: schema.Report) -> str:
         Context markdown string
     """
     lines = []
-    lines.append(f"# Context: {report.topic} (Last 30 Days)")
+    lines.append(f"# Context: {report.topic}")
     lines.append("")
     lines.append(f"*Generated: {report.generated_at[:10]} | Sources: {report.mode}*")
     lines.append("")
@@ -245,7 +245,7 @@ def render_full_report(report: schema.Report) -> str:
     lines = []
 
     # Title
-    lines.append(f"# {report.topic} - Last 30 Days Research Report")
+    lines.append(f"# {report.topic} - Research Report")
     lines.append("")
     lines.append(f"**Generated:** {report.generated_at}")
     lines.append(f"**Date Range:** {report.range_from} to {report.range_to}")

@@ -1,18 +1,102 @@
-"""Date utilities for last30days skill."""
+"""Date utilities for last2hours skill."""
 
+import re
 from datetime import datetime, timedelta, timezone
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 
-def get_date_range(days: int = 30) -> Tuple[str, str]:
-    """Get the date range for the last N days.
+def parse_range(range_str: str) -> timedelta:
+    """Parse a natural language time range string into a timedelta.
+
+    Supports formats like:
+        "2 hours", "2hours", "2h"
+        "3 days", "3days", "3d"
+        "2 weeks", "2weeks", "2w"
+        "6 months", "6months", "6mo"
+
+    Args:
+        range_str: Natural language time range (e.g., "2 hours", "3 days")
 
     Returns:
-        Tuple of (from_date, to_date) as YYYY-MM-DD strings
+        timedelta representing the duration
+
+    Raises:
+        ValueError: If the format is not recognized
     """
-    today = datetime.now(timezone.utc).date()
-    from_date = today - timedelta(days=days)
-    return from_date.isoformat(), today.isoformat()
+    range_str = range_str.strip().lower()
+
+    # Match patterns like "2 hours", "2hours", "2h"
+    match = re.match(r'^(\d+)\s*(h|hours?|d|days?|w|weeks?|mo|months?)$', range_str)
+    if not match:
+        raise ValueError(f"Invalid range format: '{range_str}'. Use formats like '2 hours', '3 days', '2 weeks', '6 months'")
+
+    amount = int(match.group(1))
+    unit = match.group(2)
+
+    if unit in ('h', 'hour', 'hours'):
+        return timedelta(hours=amount)
+    elif unit in ('d', 'day', 'days'):
+        return timedelta(days=amount)
+    elif unit in ('w', 'week', 'weeks'):
+        return timedelta(weeks=amount)
+    elif unit in ('mo', 'month', 'months'):
+        # Approximate months as 30 days
+        return timedelta(days=amount * 30)
+    else:
+        raise ValueError(f"Unknown time unit: '{unit}'")
+
+
+def get_date_range(duration: Union[int, timedelta] = timedelta(hours=2)) -> Tuple[str, str]:
+    """Get the date range for a given duration.
+
+    Args:
+        duration: Either an int (days, for backwards compatibility) or a timedelta
+
+    Returns:
+        Tuple of (from_date, to_date) as ISO 8601 strings.
+        For durations < 1 day, returns full datetime strings.
+        For durations >= 1 day, returns YYYY-MM-DD date strings.
+    """
+    # Backwards compatibility: if int passed, treat as days
+    if isinstance(duration, int):
+        duration = timedelta(days=duration)
+
+    now = datetime.now(timezone.utc)
+    from_dt = now - duration
+
+    # For short durations (< 1 day), use full datetime precision
+    if duration < timedelta(days=1):
+        return from_dt.isoformat(), now.isoformat()
+    else:
+        # For longer durations, use date-only format (existing behavior)
+        return from_dt.date().isoformat(), now.date().isoformat()
+
+
+def get_range_label(duration: timedelta) -> str:
+    """Get a human-readable label for a time range.
+
+    Args:
+        duration: The timedelta to describe
+
+    Returns:
+        String like "last 2 hours", "last 3 days", etc.
+    """
+    total_seconds = duration.total_seconds()
+    total_hours = total_seconds / 3600
+    total_days = total_seconds / 86400
+
+    if total_hours < 24:
+        hours = int(total_hours)
+        return f"last {hours} hour{'s' if hours != 1 else ''}"
+    elif total_days < 7:
+        days = int(total_days)
+        return f"last {days} day{'s' if days != 1 else ''}"
+    elif total_days < 30:
+        weeks = int(total_days / 7)
+        return f"last {weeks} week{'s' if weeks != 1 else ''}"
+    else:
+        months = int(total_days / 30)
+        return f"last {months} month{'s' if months != 1 else ''}"
 
 
 def parse_date(date_str: Optional[str]) -> Optional[datetime]:
@@ -107,18 +191,37 @@ def days_ago(date_str: Optional[str]) -> Optional[int]:
         return None
 
 
-def recency_score(date_str: Optional[str], max_days: int = 30) -> int:
+def recency_score(date_str: Optional[str], max_duration: Union[int, timedelta] = 30) -> int:
     """Calculate recency score (0-100).
 
-    0 days ago = 100, max_days ago = 0, clamped.
+    Args:
+        date_str: Date string (YYYY-MM-DD or ISO 8601 datetime)
+        max_duration: Either an int (days, for backwards compatibility) or a timedelta
+
+    Returns:
+        Score from 0-100 where 100 = now and 0 = at or beyond max_duration
     """
-    age = days_ago(date_str)
-    if age is None:
+    if not date_str:
         return 0  # Unknown date gets worst score
 
-    if age < 0:
-        return 100  # Future date (treat as today)
-    if age >= max_days:
+    # Parse the date
+    parsed = parse_date(date_str)
+    if parsed is None:
         return 0
 
-    return int(100 * (1 - age / max_days))
+    now = datetime.now(timezone.utc)
+    age = now - parsed
+
+    # Handle backwards compatibility
+    if isinstance(max_duration, int):
+        max_duration = timedelta(days=max_duration)
+
+    # Calculate score
+    if age.total_seconds() < 0:
+        return 100  # Future date (treat as now)
+    if age >= max_duration:
+        return 0
+
+    # Linear interpolation: 100 at age=0, 0 at age=max_duration
+    ratio = age.total_seconds() / max_duration.total_seconds()
+    return int(100 * (1 - ratio))

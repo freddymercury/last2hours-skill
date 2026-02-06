@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
-last30days - Research a topic from the last 30 days on Reddit + X.
+last2hours - Research a topic from the last 2 hours on Reddit + X.
 
 Usage:
     python3 last30days.py <topic> [options]
 
 Options:
+    --range=RANGE       Time range to search (default: "2 hours")
+                        Examples: "2 hours", "3 days", "2 weeks", "6 months"
     --mock              Use fixtures instead of real API calls
     --emit=MODE         Output mode: compact|json|md|context|path (default: compact)
     --sources=MODE      Source selection: auto|reddit|x|both (default: auto)
@@ -276,9 +278,14 @@ def run_research(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Research a topic from the last 30 days on Reddit + X"
+        description="Research a topic from the last 2 hours on Reddit + X"
     )
     parser.add_argument("topic", nargs="?", help="Topic to research")
+    parser.add_argument(
+        "--range",
+        default="2 hours",
+        help="Time range to search (default: '2 hours'). Examples: '2 hours', '3 days', '2 weeks', '6 months'",
+    )
     parser.add_argument("--mock", action="store_true", help="Use fixtures")
     parser.add_argument(
         "--emit",
@@ -361,8 +368,15 @@ def main():
                 print(f"Error: {error}", file=sys.stderr)
                 sys.exit(1)
 
-    # Get date range
-    from_date, to_date = dates.get_date_range(30)
+    # Parse time range and get date range
+    try:
+        duration = dates.parse_range(args.range)
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    from_date, to_date = dates.get_date_range(duration)
+    range_label = dates.get_range_label(duration)
 
     # Check what keys are missing for promo messaging
     missing_keys = env.get_missing_keys(config)
@@ -509,7 +523,7 @@ def output_result(
         print("")
         print("Claude: Use your WebSearch tool to find 8-15 relevant web pages.")
         print("EXCLUDE: reddit.com, x.com, twitter.com (already covered above)")
-        print("INCLUDE: blogs, docs, news, tutorials from the last 30 days")
+        print("INCLUDE: blogs, docs, news, tutorials from the requested time range")
         print("")
         print("After searching, synthesize WebSearch results WITH the Reddit/X")
         print("results above. WebSearch items should rank LOWER than comparable")
